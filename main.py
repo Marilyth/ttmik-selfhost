@@ -137,9 +137,23 @@ def trim_filenames():
 
         os.rename(f"website/audio/{file}", f"website/audio/{file.replace('.mp3', '')[:50]}.mp3")
         
+def replace_mp3_links():
+    for file in os.listdir("docs"):
+        if not file.endswith(".html"):
+            continue
+        
+        with open(f"docs/{file}", "r", encoding="utf-8") as f:
+            html = f.read()
+        
+        html = html.replace(f"audio/{quote(file.replace('.html', '.mp3'))}", f"https://github.com/Marilyth/ttmik-selfhost/raw/audio/docs/audio/{file.replace('.html', '.mp3')}")
+        
+        with open(f"docs/{file}", "w+", encoding="utf-8") as f:
+            f.write(html)
+        
 
 if __name__ == "__main__":
-    trim_filenames()
+    replace_mp3_links()
+    #trim_filenames()
     soundcloud_urls = []
     
     for lesson in tqdm(get_lessons(), desc="Downloading Lessons"):
