@@ -1,0 +1,81 @@
+
+/** My Learning Center, My Membership */
+.col.medium-4.large-4 .col-inner {
+    height: 100%;
+}
+div.premium-information {
+    text-align: center;
+    padding: 50px 0;
+}
+.premium-information .membership-title {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+.premium-information .active-membership-date,
+.card .user-statuses .active-membership-date {
+    color: #35509a;
+    background-color: #fff3d8;
+    border-radius: 20px;
+    padding: 10px 30px;
+    margin: 10px 0;
+    font-size: 0.9em;
+    display: inline-block;
+}
+.premium-information .active-membership-date .active-date,
+.card .user-statuses .active-membership-date .active-date {
+    font-weight: 600;
+}
+.user-statuses .stop-automatic-payments {
+    margin-top: 30px;
+}
+.stop-automatic-payments {
+    color: #35509a;
+    margin-top: 15px;
+    margin-bottom: 20px;
+    display: inline-flex;
+}
+.stop-automatic-payments .circle-question-mark {
+    background-color: #d7e3f2;
+    color: #030d51;
+    border-radius: 50%;
+    display: inline-block;
+    font-size: 0.9em;
+    width: 20px;
+    height: 20px;
+    line-height: 20px;
+    margin-right: 5px;
+    vertical-align: top;
+    margin-top: 2px;
+}
+.stop-automatic-payments a {
+    font-size: 0.9em;
+    text-align: left;
+    display: inline-block;
+}
+.woocommerce-account-my-memberships .premium-information {
+    padding-bottom: 0;
+}
+
+@media only screen and (max-width: 767px) {
+    .premium-information .active-membership-date,
+    .card .user-statuses .active-membership-date {
+        border-radius: 5px;
+    }
+
+    div.premium-information {
+        padding: 30px 0;
+    }
+
+    .stop-automatic-payments {
+        margin: 25px 15px 20px 15px;
+    }
+
+    .stop-automatic-payments .circle-question-mark {
+        padding: 0px 6px;
+        margin-right: 8px;
+    }
+
+    .stop-automatic-payments a {
+        line-height: 150%;
+    }
+}

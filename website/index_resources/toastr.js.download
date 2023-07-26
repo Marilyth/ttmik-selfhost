@@ -1,0 +1,48 @@
+
+function showToastr(config) {
+    (function ($) {
+        if(config){
+
+            // type
+            if(config.type === 'error'){
+                config.color = '#FF6633';
+            }else if(config.type === 'info'){
+                config.color='#3C579E';
+            }else{
+                config.color='#3C579E';
+            }
+
+            const toastrTemplate = `
+        <div class="ttmik-toastr" style="border-left :10px solid ${config.color}">
+          <div class="ttmik-toastr-body">
+            <div class="ttmik-toastr-top">
+              <button type="button" class="ttmik-toastr-remove" onclick="removeToastr();">x</button>
+              <p class="ttmik-toastr-title" style="color : ${config.color}; margin-left : ${config.type === 'error' ? '20px' : '0'}">
+              ${config.type === 'error' ?  '<svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12.5 20C16.6421 20 20 16.6421 20 12.5C20 8.35786 16.6421 5 12.5 5C8.35786 5 5 8.35786 5 12.5C5 16.6421 8.35786 20 12.5 20ZM11.6165 14.767H13.3763L13.6256 7.36843H11.3672L11.6165 14.767ZM13.3543 16.2408C13.1392 16.0306 12.8532 15.9255 12.4964 15.9255C12.1444 15.9255 11.8584 16.0331 11.6385 16.2482C11.4234 16.4584 11.3158 16.7248 11.3158 17.0474C11.3158 17.3701 11.4234 17.6365 11.6385 17.8467C11.8584 18.0569 12.1444 18.162 12.4964 18.162C12.8532 18.162 13.1392 18.0569 13.3543 17.8467C13.5743 17.6365 13.6843 17.3701 13.6843 17.0474C13.6843 16.7199 13.5743 16.451 13.3543 16.2408Z" fill="#FF6633"/></svg>' : '<span></span>'}
+              ${config.title}</p>
+            </div>
+            <div class="ttmik-toastr-bottom" style="display :${config.link? 'flex' : 'none'}">
+              <a href="${config.link}" class="btn yes">Go To</a>
+           </div>
+       </div>
+      `;
+
+            // append
+            $("#main").append(toastrTemplate);
+
+            // duration
+            if(config.duration){
+                setTimeout(()=>{
+                    $('.ttmik-toastr').remove();
+                },config.duration);
+            }
+        }
+    })(jQuery);
+}
+
+
+function removeToastr(){
+    (function ($) {
+        $('.ttmik-toastr').remove();
+    })(jQuery);
+}

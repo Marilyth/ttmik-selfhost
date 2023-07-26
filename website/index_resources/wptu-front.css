@@ -1,0 +1,40 @@
+.wpos-news-ticker, .wpos-news-ticker *{ box-sizing: border-box; outline: 0; }
+.wpos-news-ticker.wpos-fixed-top{ position: fixed; left: 0; right: 0; top: 0; }
+.wpos-news-ticker.wpos-fixed-bottom{ position: fixed; left: 0; right: 0; bottom: 0; }
+.wpos-label {position: relative; text-align: center; color: #FFF; font-weight: bold; padding: 0 15px; white-space: nowrap; font-size: 16px; border-right: 12px solid #fff; float: left;}
+.wpos-news {position: relative; height: 100%; overflow: hidden;}
+.wpos-news-ticker .wpos-news ul{ display: block; height: 100%; list-style: none !important; padding: 0 !important; margin: 0; width: 100%; line-height: inherit !important; }
+.wpos-effect-scroll .wpos-news ul{position: relative; margin-top: 0 !important;}
+.wpos-effect-scroll .wpos-news ul li{ display: list-item; float: left; position: relative; width: auto; }
+.wpos-news ul li{ white-space: nowrap; overflow:hidden !important; text-overflow: ellipsis; text-decoration: none; -webkit-transition: color .2s linear; -moz-transition: color .2s linear; -o-transition: color .2s linear; transition: color .2s linear; position: absolute; width: 100%; display: none; color: #333; margin: 0 !important; padding: 0 !important; line-height: inherit; }
+.wpos-news ul li a{ white-space: nowrap; text-overflow: ellipsis; text-decoration: none; padding: 0 10px; color: #333; position: relative; display: block; overflow: hidden; }
+.wpos-news ul li a:hover{ color: #069; }
+.wpos-controls {position: relative; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; float: right;}
+.wpos-controls div{width: 30px; float: left; height: 100%; cursor: pointer; text-align: center; outline: none; border-left: solid 1px #EEE; background-color: #f6f6f6;}
+.wpos-controls div:hover{ background-color: #EEE; }
+.wpos-arrow {margin: auto; display: inline-block; height: 8px; position: relative; width: 8px; color: #999;}
+.wpos-arrow::after { border-bottom-style: solid; border-bottom-width: 2px; border-right-style: solid; border-right-width: 2px; content: ''; display: inline-block; height: 8px; left: 0; position: absolute; top: 0; width: 8px; }
+.wpos-arrow.wpos-next { -moz-transform: rotate(315deg); -ms-transform: rotate(315deg); -webkit-transform: rotate(315deg); transform: rotate(315deg); left:-3px; }
+.wpos-arrow.wpos-prev { -moz-transform: rotate(135deg); -ms-transform: rotate(135deg); -webkit-transform: rotate(135deg); transform: rotate(135deg); left: 3px; }
+.wpos-arrow::before{ background-color: #fff; }
+.wpos-play{ position: relative; width: 0; height: 12px; display: inline-block; margin-left: -5px; }
+.wpos-play::after { left: 100%; top: 50%; border: solid transparent; content: " "; height: 0; width: 0; position: absolute; pointer-events: none; border-left-color: inherit; border-width: 8px; margin-top: -8px; }
+.wpos-pause{ position: relative; width: 0; height: 14px; display: inline-block; top: 1px; left:-1px; }
+.wpos-pause::before{ position: absolute; content: ""; width: 2px; height: 100%; left: 3px; background-color: inherit; }
+.wpos-pause::after{ position: absolute; content: ""; width: 2px; height: 100%; left: -3px; background-color: inherit; }
+.wptu-ticker-wrp .wptu-style-label > span{width: 0; position: absolute; right: -10px; top: 0; height: 0; border-style: solid; border-width: 10px 0 10px 10px; bottom: 0; border-color: transparent transparent transparent #2096cd; margin: auto;}
+.wptu-news-ticker{width: 100%; background: #FFF; overflow: hidden; font-size: 14px; border:2px solid #404040; margin-bottom: 20px; position:relative; height:40px; line-height: 36px; -webkit-transition: all 0.3s ease-in-out; transition: all 0.3s ease-in-out;}
+.wpos-bordernone{border: none !important;}
+.wpos-italic .wpos-ticker-news{font-style:italic;}
+.wpos-bold .wpos-ticker-news{font-weight:bold;}
+
+.rtl .wptu-ticker-wrp .wpos-label{float: right;}
+.rtl .wptu-ticker-wrp .wpos-controls{float: left;}
+.rtl .wptu-ticker-wrp .wptu-style-label > span{right: auto; left: -10px; border-width: 10px 10px 10px 0;}
+.rtl .wptu-ticker-wrp .wptu-style-label{border-right:0; border-left: 12px solid #fff;}
+.rtl .wpos-controls div{border-left: 0; border-right: solid 1px #eee;}
+.rtl .wpos-effect-scroll .wpos-news ul li{ float: right; }
+
+@media only screen and (max-width: 530px) {
+	.wpos-news-ticker .wpos-label{display:none !important;}
+}

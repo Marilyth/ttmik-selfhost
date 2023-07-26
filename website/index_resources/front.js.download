@@ -1,0 +1,1441 @@
+(function ($) {
+  $.support.cors = true;
+
+  // custom script goes here
+  $(document).ready(function () {
+    if ($('div.ld-focus').length) {
+      if (
+        $('div.ld-lesson-navigation').find(
+          'div.ld-lesson-item.ld-is-current-lesson'
+        ).length
+      ) {
+        var current = $('div.ld-lesson-navigation').find(
+          'div.ld-lesson-item.ld-is-current-lesson'
+        );
+        var current_top = $('div.ld-lesson-navigation')
+          .find('div.ld-lesson-item.ld-is-current-lesson')
+          .position().top;
+        $('div.ld-focus')
+          .find('div.ld-focus-sidebar-wrapper')
+          .scrollTop(current_top);
+      }
+
+      $('.ld-tab').on('click', function () {
+        var premiumTab = $(this).attr('data-tab') !== 'lesson';
+
+        if (premiumTab) {
+          $('.learndash-wrapper').addClass('premium-tab-view-active');
+        } else {
+          $('.learndash-wrapper').removeClass('premium-tab-view-active');
+        }
+      });
+    }
+
+    //stb email subscribe placeholder
+    $('#stb_subscribe').each(function () {
+      $(this)
+        .find('input[type=email]')
+        .attr('placeholder', 'Your email address');
+      $(this).find('button.stb_form_submit_button').html('Subscribe');
+    });
+
+    $('#lnb').each(function () {
+      var headerHeight = $('#header').height() + $('#wpadminbar').height();
+      $(this).css('padding-top', headerHeight);
+
+      $('#lnb a').on('focusin', function () {
+        $(this).parent('#lnb').addClass('view-active');
+      });
+
+      $('#lnb a').on('focusout', function () {
+        $(this).parent('#lnb').removeClass('view-active');
+      });
+    });
+
+    $('.section-courses-container.carousel').fadeIn();
+
+    // Single Product Related Item
+    var options = {
+      cellAlign: 'left',
+      contain: true,
+      wrapAround: true,
+      pageDots: false,
+      prevNextButtons: true,
+      freeScroll: false,
+      autoPlay: 7000,
+    };
+
+    var topLineAdsOptions = {
+      cellAlign: 'center',
+      contain: true,
+      wrapAround: true,
+      pageDots: false,
+      prevNextButtons: false,
+      freeScroll: false,
+      autoPlay: 3000,
+      draggable: true
+    };
+
+    if (matchMedia('screen and (max-width: 1120px)').matches) {
+      options.freeScroll = true;
+      options.prevNextButtons = false;
+    }
+
+    if (typeof $.fn.flickity === 'function') {
+      $('.section-courses-container.carousel > .row').lazyFlickity(options);
+      $('.product-section.related > .row').lazyFlickity(options);
+      $('.row.products-carousel').lazyFlickity(options);
+      $('.custom-slider').lazyFlickity(options);
+      // topline-ads 배너이미지가 2개 이상일 때부터 케러셀을 적용한다.
+      if ($('.topline-ads-carousel.mo .topline-ads-carousel-inner').length > 1) {
+        $('.topline-ads-carousel.mo').lazyFlickity(topLineAdsOptions);
+      }
+    }
+
+    $('.FreshWidget').on('click', function () {
+      FreshworksWidget('open');
+      return false;
+    });
+
+    $('.CookiebotCustomLink').on('click', function () {
+      Cookiebot.renew();
+      return false;
+    });
+
+    $(".gform_fields input[type='checkbox']").change(function () {
+      if ($(this).is(':checked')) {
+        $(this).parents('li').addClass('view-active');
+      } else {
+        $(this).parents('li').removeClass('view-active');
+      }
+    });
+
+    $('.launcher-button').on('click', function () {
+      return false;
+    });
+
+    $('.fixed-sidebar-toggler').on('click', function () {
+      $('.fixed-left-sidebar-row').toggleClass('sidebar-view-active');
+    });
+
+    /**
+   * @desc  : header 상단에 topline-ads 닫힘 버튼 눌렀을때 24시간 동안 안보이게 처리
+   * @date   : 221222
+   * @author : leesoyeon
+   */
+
+    $(".topline-ads-btn-close").on('click', function () {
+      $('.topline-ads').addClass("hidden");
+      setCookie("topline_ads_hidden", true, 1);
+    });
+
+    if ($(window).width() > 849) {
+      $('.fixed-left-sidebar-row').addClass('sidebar-view-active');
+    }
+
+    $('.searchandfilter input[type="checkbox"]').change(function () {
+      $('.searchandfilter').submit();
+    });
+
+    $('.searchandfilter').each(function () {
+      $('.searchandfilter > ul > li > ul > li > input').remove();
+    });
+
+    $('.ld-icon-premium-membership').each(function () {
+      $(this).parent().addClass('premium-tab');
+    });
+
+    if ($('form.sfwd-mark-incomplete').length) {
+      $('form.sfwd-mark-incomplete').on('submit', function (e) {
+        e.preventDefault();
+        var $form = $(this);
+        $.post(
+          $form.attr('action'),
+          $form.serialize(),
+          function (data) {
+            if (data.status == true) {
+              location.reload();
+            }
+          },
+          'json'
+        );
+      });
+    }
+    if ($('div#ttmik-review-form').length) {
+      $reviewForm = $('#ttmik-review-form');
+      $commentList = $('#comment-list');
+      // data-ttmik-action="toggle-comment"
+      $commentList.on('click', 'a.reply', function (e) {
+        e.preventDefault();
+        var parent = $(this)
+          .parent()
+          .parent()
+          .parent()
+          .parent()
+          .find('div.reply-review');
+
+        if (parent.hasClass('show')) {
+          parent.removeClass('show');
+        } else {
+          parent.addClass('show');
+        }
+      });
+      $commentList.on(
+        'click',
+        '[data-ttmik-action="toggle-comment"]',
+        function () {
+          var $self = $(this);
+          $self.toggleClass('active');
+          $self
+            .parents('.comment')
+            .children('ul.children')
+            .toggleClass('active');
+        }
+      );
+      var onSubmitComment = function (e) {
+        e.preventDefault();
+        var $form = $(this);
+        var $loader = $form.find('div.ttmik-loader');
+        $form.children().not($loader).hide();
+        $form.find('div.ttmik-loader').addClass('active');
+        $.post(
+          $form.attr('action'),
+          $form.serialize(),
+          function (data) {
+            if (data.status == true) {
+              location.reload();
+            }
+          },
+          'json'
+        );
+      };
+      $reviewForm.on('submit', 'form.ttmik-review-form', onSubmitComment);
+      $commentList.on('submit', 'form.ttmik-review-form', onSubmitComment);
+      var commentUnLockInput = function () {
+        var textarea_value = $(this).val();
+
+        if ($('body').hasClass('logged-in')) {
+          if (textarea_value != '') {
+            $(this)
+              .parent()
+              .find('button.submit')
+              .attr('disabled', false)
+              .removeClass('disabled');
+          } else {
+            $(this)
+              .parent()
+              .find('button.submit')
+              .attr('disabled', true)
+              .addClass('disabled');
+          }
+        }
+      };
+      $reviewForm.on(
+        'keyup',
+        'form.ttmik-review-form textarea',
+        commentUnLockInput
+      );
+      $commentList.on(
+        'keyup',
+        'form.ttmik-review-form textarea',
+        commentUnLockInput
+      );
+    }
+
+    jQuery(document.body).on('checkout_error', function () {
+      //jQuery('html, body').stop();
+    });
+
+    $('.wpProQuiz_button_reShowQuestion').on('click', function () {
+      $('.wpProQuiz_AnswerMessage p').each(function () {
+        var target = $(this);
+        if (target.html() == '&nbsp;') {
+          target.css('margin', '0');
+        }
+      });
+    });
+
+    const viewAnswersNodeList = document.querySelectorAll(
+      '.wpProQuiz_questionList_containers p'
+    );
+
+    if (viewAnswersNodeList.length !== 0) {
+      viewAnswersNodeList.forEach((ele) => {
+        ele.prepend('Click to ');
+      });
+    }
+
+    /**
+     * TODO 220518
+     * 1. 공통 action을 제외한 mutation 옵져버에서 element를 찾을 수 없는 에러 픽스 / 폴리필을 추가 (js 정리)
+     * 2. dom에 의존성이 있는게 안 좋은거 같다. / wp-fragment를 이용한다. (js => php)
+     */
+
+    function cartInit() {
+      var value = $('select#calc_shipping_country').val();
+      getDisabledCountries(value);
+      validateZipcodeErrorMessge();
+      // showEUcountriesVatNotice(value);
+    }
+
+    function checkoutInit() {
+      var value = $('select#shipping_country').val();
+      getDisabledCountries(value);
+      showEUcountriesVatNotice(value);
+    }
+
+    // hide error message Please enter a valid postcode / ZIP.
+    function validateZipcodeErrorMessge() {
+      var text = $('.message-container').text();
+
+      if (text && text.match('ZIP')) {
+        $('.message-container').css('display', 'none');
+      } else {
+        $('.message-container').css('display', 'block');
+      }
+    }
+
+    /**
+         * disableCountries - Cart Page
+         *
+         * COVID-19 때문에 배송제한이 생긴 국가가 발생했으며, form.woocommerce-cart-form
+         * data-disabled-countries를 체크하여 standardShipping을 선택못하게 함
+    
+         * @param {string} shippingCountry 
+         */
+    function getDisabledCountries(shippingCountry) {
+      var disableCountries = JSON.parse(
+        localStorage.getItem('data-disabled-countries')
+      );
+
+      if (jQuery.inArray(shippingCountry, disableCountries) != '-1') {
+        $('.shipping-methods-standard').show(); //Standard Shipping 불가능한 국가의 경우 안내 문구를 보이게 한다.
+        $('.shipping-over-weight').hide(); //Standard shipping 불가의 경우 무게(5kg) 초과 메시지를 보이지 않게 한다.
+
+        if ($('.shipping__list_item').length >= 2) {
+          var standardShippingInput = $(
+            "input[id$='standard_shipping_no_tracking_code_available_takes_5_9_weeks']"
+          );
+
+          if ($(standardShippingInput).is(':checked')) {
+            $(standardShippingInput)
+              .parent()
+              .siblings()
+              .find("input[type='radio']")
+              .prop('checked', 'true');
+          }
+
+          $(standardShippingInput).parent().addClass('disabled');
+          $(standardShippingInput).attr('disabled', 'disabled');
+          $(standardShippingInput)
+            .parent()
+            .find('label')
+            .html(
+              '<p>Standard Shipping</p><span>(no tracking code available) takes 5-9 weeks.</span>'
+            );
+        }
+
+        return true;
+      }
+
+      return false;
+    }
+
+    /**
+     *  vat 관세가 부과되는 EU 국가에만 notice를 출력한다.
+     * @param {string} shippingCountry :배송 받고자 하는 국가 코드
+     */
+    function showEUcountriesVatNotice(shippingCountry) {
+      // $tax_mapping = array(
+      //     "AT" => 10, //Austria 10%
+      //     "BE" => 6, //Belgium 6%
+      //     "BG" => 9,//Bulgaria 9%
+      //     "CZ" => 10,//Czech Republic 10%
+      //     "DK" => 25,//Denmark 25%
+      //     "DE" => 7,//Germany 7%
+      //     "EE" => 9,//Estonia 9%
+      //     "GR" => 6,//Greece 6%
+      //     "ES" => 4,//Spain 4%
+      //     "FR" => 20,//France 20%
+      //     "HR" => 5,//Croatia 5%
+      //     "IT" => 4,//Italy 4%
+      //     "CY" => 5,//Cyprus 5%
+      //     "LV" => 12,//Latvia 12%
+      //     "LT" => 9,//Lithuania 9%
+      //     "LU" => 3,//Luxembourg 3%
+      //     "HU" => 5,//Hungary 5%
+      //     "MT" => 5,//Malta 5%
+      //     "NL" => 9,//Netherlands 9%
+      //     "PL" => 5,//Poland 5%
+      //     "PT" => 6,//Portugal 6%
+      //     "RO" => 5,//Romania 5%
+      //     "SI" => 5,//Slovenia 5%
+      //     // woo_add_my_country 함수에도 수정시 반영필요
+      //     "SL-E" => 5,//Slovenia 5%
+      //     "SK" => 10,//Slovakia 10%
+      //     "FI" => 10,//Finland 10%
+      //     "SE" => 6//Sweden 6%
+      // );
+
+      var taxList = {
+        AT: 10,
+        BE: 6,
+        BG: 9,
+        CZ: 10,
+        DK: 25,
+        DE: 7,
+        EE: 9,
+        GR: 6,
+        ES: 4,
+        FR: 20,
+        HR: 5,
+        IT: 4,
+        CY: 5,
+        LV: 12,
+        LT: 9,
+        LU: 3,
+        HU: 5,
+        MT: 5,
+        NL: 9,
+        PL: 5,
+        PT: 6,
+        RO: 5,
+        SI: 5,
+        'SL-E': 5,
+        SK: 10,
+        FI: 10,
+        SE: 6,
+      };
+      var shippingNoticeDiv = $('#shipping-price-notice');
+
+      if ('TW' === shippingCountry && shippingNoticeDiv) {
+        //Taiwan
+        shippingNoticeDiv.show();
+        shippingNoticeDiv.removeClass('country-eu');
+        shippingNoticeDiv.addClass('country-taiwan');
+        shippingNoticeDiv.html(
+          `<p class="shipping-country-notice">All recipients in Taiwan must complete the <a href="https://www.dhl.de/content/dam/images/Express/downloads/dhl-express-taiwan-regulatory-changes-052022.pdf" target="_blank">'one-time registration via the EZWAY’ and ‘RNA'.</a></p>`
+        );
+      } else if (taxList[shippingCountry] && shippingNoticeDiv) {
+        //EU
+        shippingNoticeDiv.show();
+        shippingNoticeDiv.addClass('country-eu');
+        shippingNoticeDiv.removeClass('country-taiwan');
+        shippingNoticeDiv.html(
+          `<p class="shipping-country-notice"> <span class="font-weight-bold">Important</span><span class="detailed-description">When your order arrives at the customs office in your country, an additional customs fee might be imposed, including <span class="font-weight-bold">a ${taxList[shippingCountry]}% VAT</span>. </span>Please <a href='/additional-fees-paid-on-delivery' target='_blank'>click here</a> to get a general idea of how much the fee will be.</p>`
+        );
+      } else {
+        shippingNoticeDiv.html('');
+        shippingNoticeDiv.hide();
+      }
+    }
+
+    /**
+     * checkout에서 한국을 배송지로 선택한 경우 Korean addresses must be written in Korean. 을 보여준다.
+     * @param {event} self : shipping & billing 하고자 하는 국가 코드
+     */
+    function showKoreanAdressMustBeWritten(self) {
+      if (self.val() === 'KR') {
+        self
+          .parents('.form-row')
+          .append(
+            "<span class='warning'>Korean addresses must be written in Korean.</span>"
+          );
+      } else {
+        self.parents('.form-row').find('.warning').empty();
+      }
+    }
+
+    /**
+     * cart MutationObserver
+     * cart 페이지에 어떤 변경이 있을때마다 내부함수를 호출한다.
+     */
+    $('.woocommerce-cart').each(function () {
+      function init() {
+        var checkoutWrapper = $('.woocommerce-notices-wrapper');
+
+        var observer = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            checkoutWrapper = $('#woocommerce-cart-form');
+
+            if (mutation.type === 'childList') {
+              cartInit();
+            }
+          });
+        });
+
+        observer.observe(checkoutWrapper.get(0), {
+          childList: true,
+        });
+      }
+      init();
+      cartInit();
+    });
+    /**
+     * cart - 장바구니 수량 감소 버튼 클릭할때 최소값 보다 작거나 같은 경우 버튼 클릭 동작을 하지 않게 한다.
+     */
+    $(document).on('mousedown', '.minus.button', function () {
+      let $closestQty = $(this).closest('.quantity');
+      let $qty = $closestQty.find('.qty');
+      let minQty = parseInt($qty.attr('min'));
+      let currentQty = parseInt($qty.val());
+
+      if (currentQty <= minQty) {
+        $(this).attr('disabled', true);
+      }
+    });
+    /**
+     * cart - 장바구니 수량 증가 버튼 클릭할때 수량 감소 버튼을 활성화 한다.
+     */
+    $(document).on('mousedown', '.plus.button', function () {
+      let $closestQty = $(this).closest('.quantity');
+      let $btnMinus = $closestQty.find('.minus');
+
+      $btnMinus.attr('disabled', false);
+    });
+
+    /**
+     * checkout MutationObserver
+     * checkout - 페이지에 어떤 변경이 있을때마다 내부함수를 호출한다.
+     */
+    $('.woocommerce-checkout').each(function () {
+      function init() {
+        var checkoutWrapper = $('#order_review');
+
+        var observer = new MutationObserver(function (mutations) {
+          mutations.forEach(function (mutation) {
+            checkoutWrapper = $('.woocommerce-checkout');
+            if (mutation.type === 'childList') {
+              checkoutInit();
+              disabledAutoUpdateCheckout();
+
+              /** 모바일 전용 상단 상품목록 */
+              if (!$('#order_review').hasClass('processing')) {
+                $('.checkout-header-products tbody').html(
+                  $('.woocommerce-checkout-review-order-table tbody').html()
+                );
+                checkoutHeaderMobileProducts(false);
+              }
+              /** 모바일 전용 상단 상품목록 */
+            }
+          });
+        });
+
+        observer.observe(checkoutWrapper.get(0), {
+          childList: true,
+        });
+      }
+      init();
+      checkoutInit();
+      disabledAutoUpdateCheckout();
+      // ajaxCouponList();
+    });
+
+    /**
+     * checkout 모바일 - 상단의 상품에서 삭제 클릭시 우측의 상품 삭제 클릭으로 동작하게 한다.
+     */
+    $(document).on(
+      'click',
+      '.checkout-header-products .product-remove .remove',
+      function () {
+        let $self = $(this);
+        let className = $self.attr('class').split(' ')[1];
+
+        checkoutHeaderMobileProducts(true);
+        $('#order_review .' + className).trigger('click');
+
+        return false;
+      }
+    );
+
+    /**
+     * checkout 모바일 - 상단의 상품에서 수량변경 클릭시 우측의 상품 수량변경 클릭으로 동작하게 한다.
+     */
+    $(document).on(
+      'click',
+      '.checkout-header-products .product-total .button',
+      function () {
+        let $self = $(this);
+        let $boxQty = $self.closest('.quantity');
+        let $eleQty = $boxQty.find('.qty');
+        let qtyValue = parseInt($eleQty.val());
+        let minValue = parseInt($eleQty.attr('min'));
+        let className = $self.attr('class').split(' ')[3];
+        let isChanged = false;
+
+        if ($self.hasClass('minus') && qtyValue > minValue) {
+          // qtyValue = qtyValue - 1;
+          $eleQty.val(qtyValue);
+          isChanged = true;
+        } else if ($self.hasClass('plus')) {
+          // qtyValue = qtyValue + 1;
+          $eleQty.val(qtyValue);
+          isChanged = true;
+        }
+
+        if (true === isChanged) {
+          setTimeout(function () {
+            checkoutHeaderMobileProducts(true);
+            $('#order_review .' + className).trigger('click');
+          }, 100);
+        }
+
+        return false;
+      }
+    );
+
+    /**
+     * checkout 모바일 - 상단의 상품에서 수량을 직접 입력한 경우에 우측의 상품 수량변경으로 동작하게 한다.
+     */
+    $(document).on(
+      'keyup',
+      '.checkout-header-products .product-total .qty',
+      function () {
+        let $inputSelf = $(this);
+        let $inputQty = $('#order_review #' + $inputSelf.attr('id'));
+
+        checkoutHeaderMobileProducts(true);
+        $inputQty.val($inputSelf.val());
+        $inputQty.trigger('change');
+      }
+    );
+    /**
+     * checkout 모바일 - 상단의 상품 목록 진행중 표시
+     */
+    function checkoutHeaderMobileProducts(processing) {
+      if (false === processing) {
+        $('.wrap-checkout-header').removeClass('processing');
+        $('.wrap-checkout-header .blockUI').removeClass('blockOverlay');
+      } else if (true === processing) {
+        $('.wrap-checkout-header').addClass('processing');
+        $('.wrap-checkout-header .blockUI').addClass('blockOverlay');
+      }
+    }
+    checkoutHeaderMobileProducts(true);
+
+    /**
+     * checkout - 페이지 결제버튼 클릭 할때 이용약관 확인 및 배송,청구주소 입력을 체크한다.
+     */
+    $(document).on('click', '#place_order', function () {
+      let isSubmit = true;
+      let alertMsg = $('.alert-privacy-policy');
+      let $agreeTerms = $('.woocommerce-terms-and-conditions-checkbox-text');
+
+      //배송지 주소 필수 입력 체크
+      $('.shipping_address .validate-required').each(function () {
+        if (false === checkEmptyValue($(this))) {
+          $(this)
+            .closest('.shipping_address')
+            .find('.button-shipping-input')
+            .trigger('click');
+          $(this)
+            .closest('.shipping_address')
+            .find('.update-checkout-address')
+            .trigger('click');
+          isSubmit = false;
+          return false;
+        }
+      });
+
+      //청구지 주소 필수 입력 체크
+      $('.woocommerce-billing-fields .validate-required').each(function () {
+        if (false === checkEmptyValue($(this))) {
+          $(this)
+            .closest('.woocommerce-billing-fields')
+            .find('.button-billing-input')
+            .trigger('click');
+          $(this)
+            .closest('.woocommerce-billing-fields')
+            .find('.update-checkout-address')
+            .trigger('click');
+          isSubmit = false;
+          return false;
+        }
+      });
+
+      if ($('.check-agree-terms').is(':checked')) {
+        alertMsg.hide();
+        $agreeTerms.removeClass('required-checkbox');
+      } else {
+        alertMsg.show();
+        $agreeTerms.addClass('required-checkbox');
+        isSubmit = false;
+      }
+
+      return isSubmit;
+    });
+    /**
+     * checkout - 입력필드(input, select)의 값이 있는지 확인한다.
+     */
+    function checkEmptyValue($filed) {
+      if (
+        $filed.find('input').length &&
+        '' === $.trim($filed.find('input').val())
+      ) {
+        return false;
+      } else if (
+        $filed.find('select').length &&
+        '' === $.trim($filed.find('select').val())
+      ) {
+        return false;
+      }
+
+      return true;
+    }
+
+    /**
+     * checkout - 자주 문의하는 내용에 대한 안내
+     * (드롭다운 버튼 통해 메세지 표시)
+     * 기본적으로 드롭다운 박스는 닫혀 있는 상태,
+     * 문구 또는 드롭다운 화살표 아이콘을 클릭해서 자세한 설명을 펼칠 수 있음
+     * wp-content/themes/ttmik/woocommerce/checkout/form-checkout.php:119
+     */
+    $(document).on('click', '.questions h4', function () {
+      let $selfQ = $(this);
+      let $iconArrow = $selfQ.find('.dashicons');
+      let $description = $selfQ.next('p');
+      let $descriptions = $('.list-frequently-questions .questions .answer');
+
+      // $descriptions.removeClass("open");
+
+      if (false === $description.is(':visible')) {
+        $description.addClass('open');
+        checkoutQuestionSlideDown($selfQ, $iconArrow);
+      } else {
+        $description.removeClass('open');
+        checkoutQuestionSlideUp($selfQ, $iconArrow);
+      }
+
+      $descriptions.each(function () {
+        let $itemQuestion = $(this).closest('li');
+
+        if (!$(this).hasClass('open')) {
+          console.log($(this).text());
+          checkoutQuestionSlideUp(
+            $itemQuestion.find('h4'),
+            $itemQuestion.find('.dashicons')
+          );
+        }
+      });
+    });
+    //checkout - 자주하는 질문의 답변을 보여준다.
+    function checkoutQuestionSlideDown($selfQ, $iconArrow) {
+      $iconArrow.removeClass('dashicons-arrow-down-alt2');
+      $iconArrow.addClass('dashicons-arrow-up-alt2');
+      $selfQ.next('p').slideDown('slow');
+    }
+    //checkout - 자주하는 질문의 답변을 가린다..
+    function checkoutQuestionSlideUp($selfQ, $iconArrow) {
+      $iconArrow.removeClass('dashicons-arrow-up-alt2');
+      $iconArrow.addClass('dashicons-arrow-down-alt2');
+      $selfQ.next('p').slideUp('slow');
+    }
+
+    /**
+     * checkout -  woocommerce-direct-checkout-pro 플러그인에서 동작하는 쿠폰기능을 비활성화 한다.
+     * wp-content/plugins/woocommerce-direct-checkout-pro/assets/frontend/qlwcdc-pro.js
+     */
+    // $(document).find("#qlwcdc_order_coupon_code").bind("keyup", function(e) {
+    $(document).on('keyup', '#qlwcdc_coupon_code', function (e) {
+      e.stopPropagation();
+    });
+
+    /**
+     * checkout - 페이지 쿠폰 버튼(Apply) 클릭
+     */
+    $(document).on('click', '#btn_checkout_order_coupon', function (e) {
+      ajaxCouponCheck($(this).closest('.coupon-processing-box'));
+      return false;
+    });
+
+    /**
+     * checkout - 페이지 쿠폰 버튼(Remove) 클릭
+     */
+    $(document).on('click', '.wc-ttmik-remove-coupon', function (e) {
+      ajaxRemoveCoupon($(this));
+      console.log('WOOCOMMERCE-REMOVE-COUPON');
+      return false;
+    });
+
+    //checkout - Change address 클릭하면 배송지(Shipping)||청구지(Billing) 주소 입력필드가 나타난다.
+    $('.button-shipping-input, .button-billing-input').click(function () {
+      let $selfBox = $(this).closest('.wc-shipping-billing-button-result');
+      let $addressBox = $(this)
+        .closest('.wc-checkout-address-wrap')
+        .find('.wc-ttmik-shipping-billing-inputs');
+
+      disabledAutoUpdateCheckout();
+      // //checkout : 배송지(Shipping) 주소 입력필드 자동 업데이지 방지를 위해 address-field 클래스 삭제
+      // $addressBox.find(".form-row").each(function () {
+      //     $(this).removeClass("address-field");
+      //     $(this).removeClass("update_totals_on_change");
+      // });
+
+      $selfBox.slideUp(100, function () {
+        $addressBox.show();
+
+        // checkout - 국가/주 선택 UI에 select2 적용이 되지 않아서 추가함 : 원인 파악 및 해결이 되면 삭제해도 됨
+        wc_country_select_select2();
+      });
+
+      return false;
+    });
+
+    /** checkout - 국가/주 선택 UI에 select2 적용이 되지 않아서 추가함 : 원인 파악 및 해결이 되면 삭제해도 됨 - 시작  */
+    function wc_country_select_select2() {
+      $('select.country_select:visible, select.state_select:visible').each(
+        function () {
+          var $this = $(this);
+
+          var select2_args = $.extend(
+            {
+              placeholder:
+                $this.attr('data-placeholder') ||
+                $this.attr('placeholder') ||
+                '',
+              label: $this.attr('data-label') || null,
+              width: '100%',
+            },
+            getEnhancedSelectFormatString()
+          );
+
+          $(this)
+            .on('select2:select', function () {
+              $(this).trigger('focus'); // Maintain focus after select https://github.com/select2/select2/issues/4384
+            })
+            .selectWoo(select2_args);
+        }
+      );
+    }
+    function getEnhancedSelectFormatString() {
+      return {
+        language: {
+          errorLoading: function () {
+            // Workaround for https://github.com/select2/select2/issues/4355 instead of i18n_ajax_error.
+            return wc_country_select_params.i18n_searching;
+          },
+          inputTooLong: function (args) {
+            var overChars = args.input.length - args.maximum;
+
+            if (1 === overChars) {
+              return wc_country_select_params.i18n_input_too_long_1;
+            }
+
+            return wc_country_select_params.i18n_input_too_long_n.replace(
+              '%qty%',
+              overChars
+            );
+          },
+          inputTooShort: function (args) {
+            var remainingChars = args.minimum - args.input.length;
+
+            if (1 === remainingChars) {
+              return wc_country_select_params.i18n_input_too_short_1;
+            }
+
+            return wc_country_select_params.i18n_input_too_short_n.replace(
+              '%qty%',
+              remainingChars
+            );
+          },
+          loadingMore: function () {
+            return wc_country_select_params.i18n_load_more;
+          },
+          maximumSelected: function (args) {
+            if (args.maximum === 1) {
+              return wc_country_select_params.i18n_selection_too_long_1;
+            }
+
+            return wc_country_select_params.i18n_selection_too_long_n.replace(
+              '%qty%',
+              args.maximum
+            );
+          },
+          noResults: function () {
+            return wc_country_select_params.i18n_no_matches;
+          },
+          searching: function () {
+            return wc_country_select_params.i18n_searching;
+          },
+        },
+      };
+    }
+    /** checkout - 국가/주 선택 UI에 select2 적용이 되지 않아서 추가함 : 원인 파악 및 해결이 되면 삭제해도 됨 - 끝 */
+
+    //checkout - 배송지(Shipping) 주소 입력필드 자동 업데이지 방지를 위해 address-field 클래스 삭제
+    function disabledAutoUpdateCheckout() {
+      $('.wc-ttmik-shipping-billing-inputs')
+        .find('.form-row')
+        .each(function () {
+          $(this).removeClass('address-field');
+          $(this).removeClass('update_totals_on_change');
+        });
+    }
+
+    //checkout - 결제방법 변경하는 경우
+    $(document.body).on(
+      'change',
+      'input[type=radio][name=payment_method]',
+      function () {
+        $('.box_payment_method').removeClass('selected-payment-method');
+
+        if ($(this).val()) {
+          $(this)
+            .closest('.box_payment_method')
+            .addClass('selected-payment-method');
+
+          // paymentwall 결제 옵션을 선택한 경우
+          if ($(this).val().indexOf('paymentwall') > -1) {
+            $('.payment_box_paymentwall').show();
+          } else {
+            $('.payment_box_paymentwall').hide();
+          }
+        }
+      }
+    );
+
+    //checkout - 결제방법중 paymentwall-method 클릭한 경우 paymentwall의 첫번째 결제방법을 자동 선택한다.
+    $(document.body).on('click', '.paymentwall-method label', function () {
+      $('.pw_payment_system').each(function () {
+        $(this).trigger('click');
+        return false;
+      });
+      // $(this).next("input[type=radio][name=payment_method]").prop("checked", true);
+    });
+
+    //checkout - 배송지(Shipping)||청구지(Billing) 주소 저장하기 버튼 클릭
+    $('.update-checkout-address').click(function () {
+      let isCheckOnce = false;
+      let $addressWrap = $(this).closest('.wc-checkout-address-wrap');
+      let $addressInputs = $addressWrap.find(
+        '.wc-ttmik-shipping-billing-inputs'
+      );
+      let $addressResult = $addressWrap.find(
+        '.wc-shipping-billing-button-result'
+      );
+
+      if (true === confirmRequiredFields($addressInputs)) {
+        return false;
+      }
+
+      if ($(document.body).find('.blockOverlay').length) {
+        console.log('Updating check-out page.');
+        return false;
+      }
+
+      //배송지(Shipping)||청구지(Billing) 주소 필드 수정할 수 없게 한다.
+      $addressInputs.addClass('processing').block({
+        message: null,
+        overlayCSS: {
+          background: '#fff',
+          opacity: 0.6,
+        },
+      });
+
+      //update checkout
+      $(document.body).trigger('update_checkout');
+
+      //실행중 아이콘 사라질때
+      $(document.body).on('DOMNodeRemoved', '.blockOverlay', function () {
+        if (false === isCheckOnce) {
+          isCheckOnce = true;
+
+          $addressInputs.removeClass('processing').unblock();
+          $addressInputs.slideUp(100, function () {
+            $addressResult.show();
+            ajaxCheckoutShippingBilling($addressResult);
+          });
+        }
+      });
+
+      return false;
+    });
+
+    //Cart - CHECKOUT 버튼 클릭(Form Submit) 할 때 비로그인의 경우 로그인 페이지로 이동한다.
+    $('.checkout-form').submit(function () {
+      let loginUrl = $(this).find('input[name=user_login_url]').val();
+
+      if (!$(this).find('input[name=user_logged_in]').val()) {
+        window.location.href = loginUrl;
+        return false;
+      }
+    });
+
+    //checkout - Change address 클릭하면 배송지(Shipping)||청구지(Billing) 주소 필수 입력 확인하기
+    function confirmRequiredFields($addressBox) {
+      $isRequired = false;
+
+      //배송지(Shipping)||청구지(Billing) 주소 필수 입력 검색
+      $addressBox.find('.validate-required').each(function () {
+        $(this).find('.alert-required').remove();
+        $(this).find('input').removeClass('input-alert-required');
+        $(this).find('select').removeClass('input-alert-required');
+
+        if (
+          !$.trim($(this).find('input').val()) &&
+          !$.trim($(this).find('select').val())
+        ) {
+          $isRequired = true;
+          $(this).append(
+            '<span class="alert-required">This field is required.</span>'
+          );
+          $(this).find('input').addClass('input-alert-required');
+          $(this).find('select').addClass('input-alert-required');
+        }
+      });
+
+      return $isRequired;
+    }
+
+    /**
+     * checkout - 배송지||청구지 주소, 버튼 텍스트를 가져온다.
+     */
+    function ajaxCheckoutShippingBilling($resultBox) {
+      let $button = $resultBox.find('button'), //enter, change button
+        $address = $resultBox.find('span'), //청구지, 배송지 주소 TEXT
+        data = {
+          action: 'ttmik_checkout_address',
+          nonce: $resultBox.find('.nonce_ttmik_shipping_billing').val(),
+          field_set: $resultBox.find('.type_ttmik_shipping_billing').val(),
+        };
+      $resultBox.addClass('processing');
+
+      $address.html('');
+
+      $.ajax({
+        type: 'POST',
+        url: wc_checkout_params.ajax_url,
+        dataType: 'json',
+        data: data,
+        success: function (response) {
+          if (response.address && response.button) {
+            $button.text(response.button);
+            $address.html(response.address.replace(/\n/g, '<br />'));
+          }
+        },
+        complete: function () {
+          $resultBox.removeClass('processing');
+        },
+        error: function () {
+          console.log('CHECKOUT SHIPPING BILLING ERROR');
+        },
+      });
+      return false;
+    }
+
+    /**
+     * checkout - 페이지 아작스로 쿠폰 사용을 체크한다.
+     * 사용가능한 쿠폰인 경우 쿠폰 목록을 가져온다.
+     */
+    function ajaxCouponCheck($couponForm) {
+      let $coupon = $couponForm.find('input[name=coupon_code]'),
+        $couponBox = $couponForm.find('.coupon-input-box'),
+        $couponMsg = $couponForm.find('.coupon-result-message'),
+        coupon_code = $coupon.val();
+
+      if (!coupon_code) {
+        return;
+      }
+
+      if ($couponForm.is('.processing')) {
+        return false;
+      }
+
+      $couponForm.addClass('processing').block({
+        message: null,
+        overlayCSS: {
+          background: '#fff',
+          opacity: 0.6,
+        },
+      });
+
+      let data = {
+        security: wc_checkout_params.apply_coupon_nonce,
+        coupon_code: coupon_code,
+      };
+
+      $couponMsg.html('');
+      $couponBox.removeClass('coupon-error');
+
+      $.ajax({
+        type: 'POST',
+        url: wc_checkout_params.wc_ajax_url
+          .toString()
+          .replace('%%endpoint%%', 'apply_coupon'),
+        data: data,
+        success: function (code) {
+          if (code) {
+            if (code.indexOf('woocommerce-error') !== -1) {
+              $couponBox.addClass('coupon-error');
+            } else {
+              $(document.body).trigger('removed_coupon_in_checkout', [
+                data.coupon,
+              ]);
+              $(document.body).trigger('update_checkout', {
+                update_shipping_method: false,
+              });
+            }
+
+            $couponMsg.html($(code).hide().fadeIn());
+          }
+        },
+        complete: function () {
+          $couponForm.removeClass('processing').unblock();
+        },
+        error: function () {
+          console.log('ERROR');
+          $couponMsg.html(
+            '<ul class="woocommerce-error message-wrapper" style=""><li><div class="message-container alert-color">System Error.</div></li></ul>'
+          );
+        },
+        dataType: 'html',
+      });
+      return false;
+    }
+
+    /**
+     * checkout - 페이지 아작스로 적용된 쿠폰을 삭제한다.
+     */
+    function ajaxRemoveCoupon($btnRemove) {
+      let coupon = $btnRemove.attr('data-coupon');
+      let $couponBox = $btnRemove.closest('.coupon-table');
+
+      console.log('REMOVE COUPON');
+
+      let data = {
+        security: wc_checkout_params.remove_coupon_nonce,
+        coupon: coupon,
+      };
+
+      $couponBox.addClass('processing');
+
+      $.ajax({
+        type: 'POST',
+        url: wc_checkout_params.wc_ajax_url
+          .toString()
+          .replace('%%endpoint%%', 'remove_coupon'),
+        data: data,
+        success: function (code) {
+          $('.woocommerce-error, .woocommerce-message').remove();
+
+          if (code) {
+            $('form.woocommerce-checkout').before(code);
+
+            $(document.body).trigger('removed_coupon_in_checkout', [
+              data.coupon,
+            ]);
+            $(document.body).trigger('update_checkout', {
+              update_shipping_method: false,
+            });
+
+            // Remove coupon code from coupon field
+            $('form.checkout_coupon').find('input[name="coupon_code"]').val('');
+          }
+        },
+        complete: function () {
+          $couponBox.removeClass('processing');
+        },
+        dataType: 'html',
+      });
+    }
+
+    /*장바구니/체크아웃/주문완료 페이지 breadcrumbs 내 a 태그 비활성화 */
+    $('.checkout-breadcrumbs a').click(function () {
+      return false;
+    });
+
+    $('select#shipping_country').change(function () {
+      var value = $(this).val();
+
+      showKoreanAdressMustBeWritten($(this));
+      showEUcountriesVatNotice(value);
+    });
+
+    $('select#billing_country').on('change', function () {
+      showKoreanAdressMustBeWritten($(this));
+    });
+
+    $('#billing_first_name_field #billing_first_name').inputFilter(function (
+      value
+    ) {
+      return /^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9\s\-\.\,]*$/i.test(value);
+    });
+
+    $('#billing_last_name_field #billing_last_name').inputFilter(function (
+      value
+    ) {
+      return /^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9\s\-\.\,]*$/i.test(value);
+    });
+
+    $('.address-field #billing_postcode').inputFilter(function (value) {
+      return /^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9\s\-\.\,]*$/i.test(value);
+    });
+
+    $('.address-field #billing_city').inputFilter(function (value) {
+      return /^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9\s\-\.\,]*$/i.test(value);
+    });
+
+    $('.address-field #billing_address_1').inputFilter(function (value) {
+      return /^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9\s\-\.\,]*$/i.test(value);
+    });
+
+    $('.address-field #billing_address_2').inputFilter(function (value) {
+      return /^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9\s\-\.\,]*$/i.test(value);
+    });
+
+    $('.address-field #shipping_postcode').inputFilter(function (value) {
+      return /^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9\s\-\.\,]*$/i.test(value);
+    });
+
+    $('.address-field #shipping_city').inputFilter(function (value) {
+      return /^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9\s\-\.\,]*$/i.test(value);
+    });
+
+    $('.address-field #shipping_address_1').inputFilter(function (value) {
+      return /^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9\s\-\.\,]*$/i.test(value);
+    });
+
+    $('.address-field #shipping_address_2').inputFilter(function (value) {
+      return /^[a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣0-9\s\-\.\,]*$/i.test(value);
+    });
+
+    // ttmik-sidebar가 3초뒤에 사라지도록 설정.
+    if (!isMobile()) {
+      $('.ttmik-sidebar').addClass('active');
+      setTimeout(function () {
+        $('.ttmik-sidebar').removeClass('active');
+      }, 3000);
+    }
+
+    /* 2022-11-7
+        / 코스 숨김 버튼 활성화 관련 로직 시작
+        / clickup : https://app.clickup.com/t/345cefn
+        */
+    if ($('.ld-item-list').length > 0) {
+      const premiumCourses = 'Premium Courses';
+      const hiddenCourses = 'Hidden Courses';
+
+      // 프리미엄과 히든 코스가 없을 경우 알림 메시지를 보여줄 수 있도록 합니다
+      const numberOfHiddenCourses = $(
+        '.ld-item-list-items'
+      ).eq(1).find('.ld-item-list-container.is-hidden').length;
+      const numberOfPremiumCourses = $(
+        '.ld-item-list-items'
+      ).eq(1).find('.ld-item-list-container').length;
+      var $courseList = $('.ld-item-list.ld-course-list').eq(1)
+      if ($courseList) {
+        if (numberOfHiddenCourses === numberOfPremiumCourses) {
+          $courseList.addClass(
+            'have-not-premium-course'
+          );
+        } else if (numberOfHiddenCourses === 0) {
+          $courseList.addClass(
+            'have-not-hidden-course'
+          );
+        }
+      }
+
+      const changeViewFunc = (pointerEvent) => {
+        const $activeButton = $('.view-active').eq(0);
+        const $inActiveButton = $('.view-inactive').eq(0);
+
+        const clickedValue = $(pointerEvent.target).data('value');
+
+        if (clickedValue === $activeButton.data('value')) {
+          return;
+        }
+        else if (clickedValue === $inActiveButton.data('value')) {
+          $activeButton.removeClass('view-active');
+          $activeButton.addClass('view-inactive');
+          $inActiveButton.removeClass('view-inactive');
+          $inActiveButton.addClass('view-active');
+
+          var $courseList = $('.ld-item-list.ld-course-list').eq(1)
+          // 클래스가 바뀌면 상단 container에 hide 클래스를 추가, 혹은 제거해줍니다
+          $courseList.toggleClass(
+            'hidden-course-view'
+          );
+        }
+      };
+
+      // view-button 내부 모달에 이벤트를 넣어줍니다.
+      $('.view-button').on(
+        'click',
+        '.premium-courses-view-selector',
+        changeViewFunc
+      );
+      $('.view-button').on(
+        'click',
+        '.hidden-courses-view-selector',
+        changeViewFunc
+      );
+
+      $('.view-button').click(function () {
+        // 랩탑일 경우의 클릭 로직입니다
+        if ($(window).width() > 1024) {
+          // 먼저, view-active 와 inactive를 전환합니다.
+          $('.view-active').removeClass('view-active').addClass('view-inactive');
+          $(this).removeClass('view-inactive').addClass('view-active');
+          // 클래스가 바뀌면 상단 container에 hide 클래스를 추가, 혹은 제거해줍니다 (토글 시 오류 발생으로 수정함)
+          $hiddenClassValue = jQuery('.view-active').eq(0).data('value');
+          if ($hiddenClassValue === hiddenCourses) {
+            // hiddenCourses가 활성화 되었을 때
+            $('.ld-item-list.ld-course-list').eq(1).addClass(
+              'hidden-course-view'
+            );
+          } else if ($hiddenClassValue === premiumCourses) {
+            // premiumCourses가 활성화 되었을 때
+            $('.ld-item-list.ld-course-list').eq(1).removeClass(
+              'hidden-course-view'
+            );
+          }
+        }
+        // 모바일일 경우의 클릭 로직입니다
+        else {
+          // 모달이 있는지 확인하고 없으면 생성합니다.
+          if ($(this).children('.modal-background').length) {
+            $(this).children('.modal-background').remove();
+          } else {
+            $(this).append(`
+                      <div class="modal-background">
+                          <div class="drop-down-for-edit-container">
+                              <div class="premium-courses-view-selector" data-value="Premium Courses">${premiumCourses}</div>
+                              <div class="hidden-courses-view-selector" data-value="Hidden Courses">${hiddenCourses}</div>
+                          </div>
+                      </div>
+                      `);
+          }
+        }
+      });
+
+      // 코스 에디트 버튼의 이벤트입니다. (jQuery.ajax 통신)
+      $('.edit-course-view-button').click(function () {
+        // 코스 수정이 완료된 경우 통신 로직
+        if ($(this).hasClass('active')) {
+          $(this).text('Edit List');
+
+          // 전역에서 숨김 코스 변수들을 가져옵니다.
+          let hiddenCoursesInDB = usermeta.hiddenCoursesInDB[0];
+          const hiddenCheckedCourses = usermeta.hiddenCheckedCourses;
+
+          // 하나라도 클릭한 코스가 있으면 로직이 작동합니다
+          if (hiddenCheckedCourses.length !== 0) {
+            // array가 아닐 경우 빈 array로 만들어줍니다
+            if (!Array.isArray(hiddenCoursesInDB)) {
+              hiddenCoursesInDB = [];
+            }
+            let hiddenCoursesForRequest = hiddenCoursesInDB;
+
+            // DB의 usermeta 요소와 선택한 요소를 비교합니다 (이미 있는 요소 = hidden에서 삭제, 없는 요소 = hidden에 추가)
+            hiddenCheckedCourses.every((element) => {
+              switch (hiddenCoursesForRequest.includes(element)) {
+                case true:
+                  return (hiddenCoursesForRequest =
+                    hiddenCoursesForRequest.filter(
+                      (course) => course !== element
+                    ));
+                case false:
+                  return hiddenCoursesForRequest.push(element);
+              }
+            });
+
+            var $xhr = jQuery
+              .ajax({
+                type: 'POST',
+                url: usermeta.ajaxurl,
+                data: {
+                  action: 'set_learningcenter_hidden_course',
+                  hiddenCourse: hiddenCoursesForRequest,
+                },
+                dataType: 'json',
+              })
+              .then(function (response) {
+                // 통신이 이루어졌을 때 성사여부에 따라 메시지가 다른 팝업을 생성해줍니다.
+                $('.edit-course-view-button').after(`
+                  <div class="popup-container">
+                      <div class="popup-content">
+                          <div class="popup-title font-dmsans-700">${response.status == 'success' ? 'Done!' : 'Oops!'}
+                      </div>
+                      <div class="popup-button-container">
+                          <div class="popup-button"></div>
+                      </div>
+                      <div class="popup-message ">${response.status == 'success' ? 'List successfully updated.' : 'Something went wrong. Please try again.'}</div>
+                      </div>
+                  </div>
+              `);
+
+                // user_meta에 반영된 hidden course를 보여주기 위해 재로딩합니다.
+                $('.popup-button').click(function () {
+                  $('.popup-container').remove();
+                  location.reload();
+                });
+                setTimeout(function () {
+                  $('.popup-container').remove();
+                  location.reload();
+                }, 5000);
+              });
+          }
+        } else {
+          $(this).text('Save the current state');
+        }
+
+        // 코스 수정 버튼의 활성화/비활성화를 토글합니다.
+        $(this).toggleClass('active');
+        // 스타일 변화를 위해 프리미엄 코스 블럭에 활성화 클래스를 추가합니다.
+        $('.ld-item-list.ld-course-list').eq(1).toggleClass('active');
+      });
+
+      // 코스 상태(숨길지, 안 숨길지) 선택 버튼의 이벤트입니다
+      $('.course-view-toggle-button').click(function () {
+        const courseID = $(this).attr('id');
+        if (usermeta.hiddenCheckedCourses.includes(courseID)) {
+          // 만약 요소가 이미 있으면 제거합니다 (클릭했다가 다시 클릭해서 취소한 경우 오류 발생으로 추가)
+          usermeta.hiddenCheckedCourses.splice(
+            usermeta.hiddenCheckedCourses.indexOf(courseID),
+            1
+          );
+        } else {
+          usermeta.hiddenCheckedCourses.push(courseID);
+        }
+        $(this).toggleClass('active');
+      });
+    }
+  });
+
+  /* 2022-11-7
+    / 코스 숨김 버튼 활성화 관련 로직 끝
+    */
+
+  jQuery.fn.inputFilter = function (inputFilter) {
+    var self = this;
+
+    return this.on(
+      'input keydown mousedown mouseup select contextmenu drop',
+      function () {
+        if (inputFilter(this.value)) {
+          this.oldValue = this.value;
+          this.oldSelectionStart = this.selectionStart;
+          this.oldSelectionEnd = this.selectionEnd;
+
+          self.parents('.address-field').find('.warning').remove();
+        } else if (this.hasOwnProperty('oldValue')) {
+          this.value = this.oldValue;
+          this.setSelectionRange(this.oldSelectionStart, this.oldSelectionEnd);
+
+          if (!self.parent().find('.warning').length) {
+            self
+              .parent()
+              .append(
+                "<span class='warning' style='display:block;color:#f44339;font-size:.86em'>Enter only Korean or alphabetic characters, numbers, and hyphens.</span>"
+              );
+          }
+        } else {
+          this.value = '';
+        }
+      }
+    );
+  };
+
+
+
+})(jQuery);

@@ -1,0 +1,70 @@
+.pagination-container {
+  display: flex;
+  align-items: center;
+  bottom: 0;
+  justify-content: center;
+  z-index:8;
+  margin: 0 20px;
+}
+.pagination-box{
+  display: flex;
+  align-items: center;
+  bottom: 0;
+  justify-content: center;
+}
+
+.pagination-numbers{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+.pagination-number,
+.pagination-button{
+  font-size: 1rem;
+  background-color: transparent;
+  border: none;
+  border-radius: 0.2rem;
+  margin-right: 0;
+  padding: 0;
+  min-width : 42px;
+  height: 42px;
+  color: #35509A;
+}
+
+.pagination-number:hover,
+.pagination-button:not(.disabled):hover {
+  background: #fff;
+}
+.pagination-button{
+  text-indent : -9999px;
+}
+
+.pagination-button#firstButton{
+  background-image: url("https://cdn.talktomeinkorean.com/wp-content/themes/ttmik/assets/images/pagination-arrow-twice.svg");
+  transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+}
+
+.pagination-button#prevButton{
+  background-image: url("https://cdn.talktomeinkorean.com/wp-content/themes/ttmik/assets/images/pagination-arrow.svg");
+  transform: rotate(180deg);
+  -webkit-transform: rotate(180deg);
+  -ms-transform: rotate(180deg);
+  -o-transform: rotate(180deg);
+}
+
+.pagination-button#nextButton{
+  background-image: url("https://cdn.talktomeinkorean.com/wp-content/themes/ttmik/assets/images/pagination-arrow.svg");
+}
+
+.pagination-button#lastButton{
+  background-image: url("https://cdn.talktomeinkorean.com/wp-content/themes/ttmik/assets/images/pagination-arrow-twice.svg");
+}
+
+.pagination-number.active {
+  color: #fff;
+  background: #35509A;
+}

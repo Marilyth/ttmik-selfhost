@@ -1,0 +1,21 @@
+// roadmap microfrontend 
+window.addEventListener("load",() => {
+  var roadmapDom = document.querySelector("[data-ttmik-extension='roadmap-frame']");
+  var roadmapBookDom = document.querySelector("[data-ttmik-extension='roadmap-book-frame']");
+  var roadmapCourseDom = document.querySelector("[data-ttmik-extension='roadmap-course-frame']");
+
+  // roadmap (sitemap)
+  if(roadmapDom instanceof HTMLElement) {
+      renderPage.RoadmapEntry(roadmapDom);
+  }
+
+  // bookstore map
+  if(roadmapBookDom instanceof HTMLElement) {
+      renderPage.RoadmapBook(roadmapBookDom);
+  }
+
+  // coursemap
+  if(roadmapCourseDom instanceof HTMLElement) {
+      renderPage.RoadmapCourse(roadmapCourseDom);
+  }
+})

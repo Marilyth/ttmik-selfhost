@@ -1,0 +1,41 @@
+(function (h, o, u, n, d) {
+  h = h[d] = h[d] || { q: [], onReady: function (c) { h.q.push(c) } }
+  d = o.createElement(u); d.async = 1; d.src = n
+  n = o.getElementsByTagName(u)[0]; n.parentNode.insertBefore(d, n)
+})(window, document, 'script', 'https://www.datadoghq-browser-agent.com/datadog-rum-v4.js', 'DD_RUM')
+function rumInit() {
+  if (typeof rumContext === 'undefined') {
+      return;
+  }
+  DD_RUM.onReady(function () {
+      DD_RUM.init({
+          clientToken: 'pub89b9a4e0626b156fe94c68a90af64f44',
+          applicationId: 'faf0ead7-0e6b-4a93-8d42-4e0ccab422e6',
+          site: 'datadoghq.com',
+          service: 'talktomeinkorean.com',
+          env: 'prod',
+          // Specify a version number to identify the deployed version of your application in Datadog
+          // version: '1.0.0',
+          sampleRate: 100,
+          sessionReplaySampleRate: rumContext.isPremium ? 100 : 0,
+          trackInteractions: rumContext.isPremium ? 100 : 0,
+          trackViewsManually: true,
+          defaultPrivacyLevel: 'allow',
+          allowedTracingOrigins: [
+              "https://talktomeinkorean.com",
+              // datadog 트래이싱 및 해더 정책때문에 이슈가 있었음 차후 allow-header수정후 반영
+              //   /https:\/\/.*\.talktomeinkorean\.com/
+          ]
+      });
+
+      DD_RUM.startView(location.href.slice(location.origin.length))
+      if (rumContext.isLogin) {
+          DD_RUM.setUser(rumContext);
+          DD_RUM.addRumGlobalContext('usr', rumContext);
+          DD_RUM.startSessionReplayRecording();
+      } else {
+          DD_RUM.removeUser();
+      }
+  })
+}
+rumInit();

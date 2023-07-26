@@ -1,0 +1,143 @@
+var getWindowSize = function () {
+    return jQuery(window).width();
+};
+var getWindowMode = function () {
+    return getWindowSize() >= 850 ? "pc" : "mobile";
+};
+var isDevelopment = function () {
+    return window.location.host !== "talktomeinkorean.com";
+}
+var getDomain = function () {
+    return window.location.host === "talktomeinkorean.com" ? "talktomeinkorean.com" : "talktomeinkorean.kr";
+}
+var getOrigin = function () {
+    return window.location.protocol + "//" + getDomain()
+}
+var getNotificationUrl = function (extra = "") {
+    return (
+        window.location.protocol + "//notification." + getDomain() + extra
+    );
+};
+var isSubDomain = function (domain) {
+    return domain.split(".").slice(1).join(".") === getDomain();
+};
+var CONSTANT = {
+    NAVIGATION_KEY: "navigation-type",
+};
+// var $frame = jQuery('[data-ttmik-extension="notification-frame"]');
+var initMode = getWindowMode();
+var nextFrameCallback = function (cb) {
+    if ('requestAnimationFrame' in window) {
+        window.requestAnimationFrame(cb);
+    } else {
+        setTimeout(cb, 0);
+    }
+}
+jQuery(document).ready(function () {
+    var getCookie = function (name) {
+        let matches = document.cookie.match(
+            new RegExp(
+                "(?:^|; )" +
+                name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, "\\$1") +
+                "=([^;]*)"
+            )
+        );
+        return matches ? decodeURIComponent(matches[1]) : "";
+    }
+    var $frame = jQuery(
+        '<section data-ttmik-extension="notification-frame"></section>'
+    );
+    $frame.attr("data-" + CONSTANT.NAVIGATION_KEY, initMode);
+    var $notiIcon = jQuery('[data-ttmik-extension="notification"]');
+    var $notiCount = jQuery('[data-ttmik-extension="notification-count"]');
+    var toggleFrame = function () {
+        $frame.addClass("animatable");
+        $frame.toggleClass("active");
+    };
+    var dispatchFrameTheme = function (type) {
+        window.postMessage(
+            {
+                type: "theme",
+                payload: {
+                    mode: type,
+                },
+            },
+            getOrigin()
+        );
+    };
+    var batchFrame = function (type, $self) {
+        $frame.attr("data-" + CONSTANT.NAVIGATION_KEY, type);
+        if (type === "pc") {
+            var offset = $self.offset();
+            $frame.css({
+                top: offset.top + $self.height(),
+                left: offset.left - $frame.width() + $self.width(),
+            });
+        } else {
+            $frame.css({
+                top: 0,
+                left: 0,
+            });
+        }
+    };
+    var lazyEvent = function (fn) {
+        return function (e) {
+            var scope = this;
+            nextFrameCallback(function () {
+                fn.call(scope, e);
+            });
+        };
+    };
+    var autoResizeFrame = function () {
+        var mode = getWindowMode();
+        var $selectedNode = $notiIcon.filter(
+            "[data-" + CONSTANT.NAVIGATION_KEY + "=" + mode + "]"
+        );
+        var $node = $selectedNode.length > 0 ? $selectedNode : $notiIcon;
+        batchFrame(mode, $node);
+        dispatchFrameTheme(mode);
+    };
+    nextFrameCallback(function () {
+        renderPage.Notification($frame.get(0)).then(function () {
+            jQuery(document.body).prepend($frame);
+        });
+    })
+    $notiIcon.on("click", function (e) {
+        e.preventDefault();
+        autoResizeFrame();
+        toggleFrame();
+    });
+    $frame.on("transitionend", function (e) {
+        $frame.removeClass("animatable");
+    });
+    jQuery(window).on(
+        "resize scroll",
+        lazyEvent(function (e) {
+            autoResizeFrame();
+        })
+    );
+    window.addEventListener("message", function (e) {
+        var data = e.data;
+        if (isSubDomain(e.origin) || e.origin === getOrigin()) {
+            switch (data.type) {
+                case "info":
+                    if (data.payload.href) {
+                        location.href = data.payload.href;
+                    }
+                    break;
+                case "close":
+                    toggleFrame();
+                    break;
+                case "sync":
+                    var count = data.payload.count;
+                    var isLarge = count > 9;
+                    var $badge = $notiIcon.find(".badge");
+                    $notiCount.text(isLarge ? "9+" : count);
+                    $badge.css({
+                        display: count > 0 ? "block" : "none",
+                    });
+                    break;
+            }
+        }
+    });
+});

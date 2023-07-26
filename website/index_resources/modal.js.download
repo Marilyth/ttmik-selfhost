@@ -1,0 +1,103 @@
+
+/**
+ * cart에서 membership과 books 동시 구매 시 checkout 하려고 할 때 뜨는 modal
+ */
+ function showMembershipDeleteModal() {
+  (function ($) {
+      var template = `
+      <div class="ttmik-modal">
+        <div class="ttmik-modal-bg"></div>
+        <div class="ttmik-modal-dialog">
+          <form method="post" class="form ttmik-modal-form">
+            <div class="ttmik-modal-content">
+              <div class="ttmik-modal-body">
+                <div class="ttmik-modal-title">
+                  <svg
+                    width="26"
+                    height="26"
+                    viewBox="0 0 26 26"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      clip-rule="evenodd"
+                      d="M12.5 20C16.6421 20 20 16.6421 20 12.5C20 8.35786 16.6421 5 12.5 5C8.35786 5 5 8.35786 5 12.5C5 16.6421 8.35786 20 12.5 20ZM11.6165 14.767H13.3763L13.6256 7.36843H11.3672L11.6165 14.767ZM13.3543 16.2408C13.1392 16.0306 12.8532 15.9255 12.4964 15.9255C12.1444 15.9255 11.8584 16.0331 11.6385 16.2482C11.4234 16.4584 11.3158 16.7248 11.3158 17.0474C11.3158 17.3701 11.4234 17.6365 11.6385 17.8467C11.8584 18.0569 12.1444 18.162 12.4964 18.162C12.8532 18.162 13.1392 18.0569 13.3543 17.8467C13.5743 17.6365 13.6843 17.3701 13.6843 17.0474C13.6843 16.7199 13.5743 16.451 13.3543 16.2408Z"
+                      fill="#030D51"
+                    ></path>
+                  </svg>
+  
+                  <p style="margin-top: 10px; margin-left:20px;font-weight: 600">
+                    Your book order will be processed first to ensure a smooth customs clearance process.
+                  </p>
+                </div>
+              </div>
+              <div class="ttmik-modal-footer">
+                <button
+                  type="submit"
+                  name="deletePremiumProduct"
+                  id="deletePremiumProduct"
+                  class="btn yes"
+                >
+                  Got it!
+                </button>
+                <button
+                  type="button"
+                  name="removeCartConfirmModal"
+                  id="removeCartConfirmModal"
+                  class="btn cancel"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      `
+
+      // append
+      $('html,body').css('overflow','hidden');
+      $("body").append(template);
+
+      // cancel
+      $('#removeCartConfirmModal').click(function(){
+          $('.ttmik-modal').remove();
+          $('html').css('overflow','');
+
+          showToastr({
+              type: 'error',
+              title  : 'Books and subscriptions can only be purchased in separate orders.',
+          });
+      });
+
+  })(jQuery);
+}
+
+/**
+ *  중복 결제 alert 팝업
+ *  premium 유저일때 membership을 담으려고 할 때 뜨는 modal
+ *  redirect /curriculum
+ *  https://www.figma.com/file/9mdbPeOPhXrOmXi0vZ2CmC/%EC%A4%91%EB%B3%B5%EA%B2%B0%EC%A0%9C-alert-%ED%8C%9D%EC%97%85?node-id=3%3A88
+ */
+function showRedirectCurriculumnPageModal() {
+ (function ($) {
+     // append
+      // show modal
+     $('html,body').css('overflow','hidden');
+     if($('#curriculumnRedirectModal' )) {
+        $('#curriculumnRedirectModal').show();
+     }
+
+    var redirectTimeoutID = setTimeout(function(){ window.location="/curriculum"; },3000);
+
+    // hide modal
+    $('#cancelRedirect').click(function(){
+      $('#curriculumnRedirectModal').hide();
+      $('html').css('overflow','');
+      clearTimeout(redirectTimeoutID);
+    });
+
+ })(jQuery);
+}
+

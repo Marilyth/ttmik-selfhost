@@ -1,0 +1,19 @@
+jQuery(document).ready(function () {
+	// One solution might be to use the following script and bypass the 7 days expiry rule set in browsers such as Safari:
+	// https://support.cookiebot.com/hc/en-us/articles/360023003294-Cookie-consent-expiration-in-Safari-12-1-and-newer
+	window.addEventListener("CookiebotOnConsentReady", function () {
+		var c = Cookiebot,
+			d = document,
+			cookies = d.cookie.split(";"),
+			consentCookie = "",
+			consentDate = c.consentUTC,
+			consentExpiry = new Date(consentDate.setMonth(consentDate.getMonth() + 12)),
+			now = new Date();
+		 
+		for (var i = 0; i < cookies.length; i++)
+		  if (/^CookieConsent/g.test(cookies[i]))
+			consentCookie = cookies[i];
+		if (consentCookie !== "" && now < consentExpiry)
+		  d.cookie = consentCookie + ";expires=" + consentExpiry.toUTCString();
+	  });
+});

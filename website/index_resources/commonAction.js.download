@@ -1,0 +1,38 @@
+var $window = jQuery(window);
+var $document = jQuery(document);
+
+var isMobile = function () {
+    return $window.width() < 640;
+}
+
+$document.ready(function () {
+    $document.on("click", ".ld-user-menu", function () {
+        if (isMobile()) {
+            jQuery(this).toggleClass("active");
+        }
+    });
+});
+
+/**
+ * @param {string} selector
+ * @param {string} event
+ * @param {function} callback
+ * @use search-infinite.js , pagination.js
+ * @desc pagination시 loader show & hide하는 고차함수
+ */
+var hocFilterLoader =  function hocFilterLoader($dom) {
+    return function (isLoading) {
+        if ($dom.length <= 0) {
+            return;
+        }
+        $dom[isLoading ? "addClass" : "removeClass"]("active");
+    }
+}
+
+// js setcookie 함수
+function setCookie(key, value, expiredays) {
+    var todayDate = new Date();
+    todayDate.setDate(todayDate.getDate() + expiredays); // 현재 시각 + 일 단위로 쿠키 만료 날짜 변경
+    // todayDate.setTime(todayDate.getTime() + (expiredays * 24 * 60 * 60 * 1000)); // 밀리세컨드 단위로 쿠키 만료 날짜 변경
+    document.cookie = key + "=" + escape(value) + "; path=/; expires=" + todayDate.toGMTString() + ";";
+}

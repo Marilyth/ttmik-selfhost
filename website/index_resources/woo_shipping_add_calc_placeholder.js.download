@@ -1,0 +1,32 @@
+/*
+* Add placeholder to shipping calculator input (23.04.35)
+*/
+
+// 웹 페이지의 내용이 로드되고 준비되면 실행되는 이벤트 리스너를 추가합니다.
+document.addEventListener('DOMContentLoaded', function () {
+    
+    var currentPath = window.location.pathname;
+
+    // 경로가 '/checkout/' 인 경우만 아래의 코드를 실행합니다.
+    if (currentPath === '/checkout/' || currentPath === '/cart/') {
+        // DOM의 변경 사항을 관찰하고 처리하는 MutationObserver 객체를 생성합니다.
+        var observer = new MutationObserver(function (mutations) {
+            // 발생한 모든 변형 사항에 대해 반복 처리합니다.
+            mutations.forEach(function (mutation) {
+                // 국가 검색 입력란을 선택하고 해당 요소를 가져옵니다.
+                var input = document.querySelector('.select2-search__field');
+                
+                // 입력란이 존재하는 경우에만 다음 동작을 수행합니다.
+                if (input) {
+                    // 입력란의 placeholder 텍스트를 변경합니다.
+                    input.setAttribute('placeholder', ' Type here to search for your country');
+                    // (취소된 기능) 목표를 달성했으므로, 추가 변형 사항에 대한 관찰을 중지합니다. => 유저가 계속 클릭시 대응해야 해서 observer 유지
+                    // observer.disconnect();
+                }
+            });
+        });
+
+        // 페이지의 body 요소에서 하위 요소들의 추가 및 제거를 감시합니다.
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+});

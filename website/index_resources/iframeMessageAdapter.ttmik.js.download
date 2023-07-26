@@ -1,0 +1,18 @@
+(function () {
+    var isSubDomain = function (domain) {
+        return domain.split(".").slice(1).join(".") === window.location.host;
+    };
+
+    window.addEventListener("message", function (e) {
+        var data = e.data;
+        if (isSubDomain(e.origin) || window.location.origin === e.origin) {
+            switch (data.type) {
+                case "redirect":
+                    if (data.payload.href) {
+                        location.href = data.payload.href;
+                    }
+                    break;
+            }
+        }
+    });
+})();
